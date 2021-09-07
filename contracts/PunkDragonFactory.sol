@@ -21,17 +21,17 @@ contract PunkDragonFactory is FactoryERC721, Ownable {
     string public baseURI = "https://creatures-api.opensea.io/api/factory/";
 
     /*
-     * Enforce the existence of only 100 OpenSea creatures.
+     * Enforce the existence of only 777 Punk Dragons.
      */
-    uint256 DRAGON_SUPPLY = 100;
+    uint256 DRAGON_SUPPLY = 777;
 
     /*
-     * Three different options for minting Creatures (basic, premium, and gold).
+     * Three different options for minting Dragons (basic, premium, and gold).
      */
     uint256 NUM_OPTIONS = 3;
     uint256 SINGLE_DRAGON_OPTION = 0;
-    uint256 MULTIPLE_CREATURE_OPTION = 1;
-    uint256 NUM_CREATURES_IN_MULTIPLE_CREATURE_OPTION = 4;
+    uint256 MULTIPLE_DRAGON_OPTION = 1;
+    uint256 NUM_DRAGONS_IN_MULTIPLE_DRAGON_OPTION = 4;
 
     constructor(address _proxyRegistryAddress, address _nftAddress) {
         proxyRegistryAddress = _proxyRegistryAddress;
@@ -41,7 +41,7 @@ contract PunkDragonFactory is FactoryERC721, Ownable {
     }
 
     function name() override external pure returns (string memory) {
-        return "OpenSeaCreature Item Sale";
+        return "Punk Dragon Item Sale";
     }
 
     function symbol() override external pure returns (string memory) {
@@ -77,16 +77,16 @@ contract PunkDragonFactory is FactoryERC721, Ownable {
         );
         require(canMint(_optionId));
 
-        Creature openSeaCreature = Creature(nftAddress);
-        if (_optionId == SINGLE_CREATURE_OPTION) {
-            openSeaCreature.mintTo(_toAddress);
-        } else if (_optionId == MULTIPLE_CREATURE_OPTION) {
+        Dragon punkDragon = Dragon(nftAddress);
+        if (_optionId == SINGLE_DRAGON_OPTION) {
+            punkDragon.mintTo(_toAddress);
+        } else if (_optionId == MULTIPLE_DRAGON_OPTION) {
             for (
                 uint256 i = 0;
-                i < NUM_CREATURES_IN_MULTIPLE_CREATURE_OPTION;
+                i < NUM_DRAGONS_IN_MULTIPLE_DRAGON_OPTION;
                 i++
             ) {
-                openSeaCreature.mintTo(_toAddress);
+                punkDragon.mintTo(_toAddress);
             }
         }
     }
@@ -96,16 +96,16 @@ contract PunkDragonFactory is FactoryERC721, Ownable {
             return false;
         }
 
-        Creature openSeaCreature = Creature(nftAddress);
-        uint256 creatureSupply = openSeaCreature.totalSupply();
+        Dragon punkDragon = Dragon(nftAddress);
+        uint256 dragonSupply = punkDragon.totalSupply();
 
         uint256 numItemsAllocated = 0;
-        if (_optionId == SINGLE_CREATURE_OPTION) {
+        if (_optionId == SINGLE_DRAGON_OPTION) {
             numItemsAllocated = 1;
-        } else if (_optionId == MULTIPLE_CREATURE_OPTION) {
-            numItemsAllocated = NUM_CREATURES_IN_MULTIPLE_CREATURE_OPTION;
+        } else if (_optionId == MULTIPLE_DRAGON_OPTION) {
+            numItemsAllocated = NUM_DRAGONS_IN_MULTIPLE_DRAGON_OPTION;
         }
-        return creatureSupply < (CREATURE_SUPPLY - numItemsAllocated);
+        return dragonSupply < (DRAGON_SUPPLY - numItemsAllocated);
     }
 
     function tokenURI(uint256 _optionId) override external view returns (string memory) {

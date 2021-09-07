@@ -8,7 +8,7 @@ import "./ERC721Tradable.sol";
  * @title Dragon
  * Dragon - a contract for my non-fungible punk dragons.
  */
-contract Creature is ERC721Tradable {
+contract Dragon is ERC721Tradable {
     constructor(address _proxyRegistryAddress)
         ERC721Tradable("Dragon", "OSC", _proxyRegistryAddress)
     {}
