@@ -5,10 +5,9 @@ pragma solidity ^0.8.0;
 import "openzeppelin-solidity/contracts/access/Ownable.sol";
 import "openzeppelin-solidity/contracts/utils/Strings.sol";
 import "./IFactoryERC721.sol";
-import "./Creature.sol";
-import "./CreatureLootBox.sol";
+import "./PunkDragon.sol";
 
-contract CreatureFactory is FactoryERC721, Ownable {
+contract PunkDragonFactory is FactoryERC721, Ownable {
     using Strings for string;
 
     event Transfer(
@@ -19,29 +18,24 @@ contract CreatureFactory is FactoryERC721, Ownable {
 
     address public proxyRegistryAddress;
     address public nftAddress;
-    address public lootBoxNftAddress;
     string public baseURI = "https://creatures-api.opensea.io/api/factory/";
 
     /*
      * Enforce the existence of only 100 OpenSea creatures.
      */
-    uint256 CREATURE_SUPPLY = 100;
+    uint256 DRAGON_SUPPLY = 100;
 
     /*
      * Three different options for minting Creatures (basic, premium, and gold).
      */
     uint256 NUM_OPTIONS = 3;
-    uint256 SINGLE_CREATURE_OPTION = 0;
+    uint256 SINGLE_DRAGON_OPTION = 0;
     uint256 MULTIPLE_CREATURE_OPTION = 1;
-    uint256 LOOTBOX_OPTION = 2;
     uint256 NUM_CREATURES_IN_MULTIPLE_CREATURE_OPTION = 4;
 
     constructor(address _proxyRegistryAddress, address _nftAddress) {
         proxyRegistryAddress = _proxyRegistryAddress;
         nftAddress = _nftAddress;
-        lootBoxNftAddress = address(
-            new CreatureLootBox(_proxyRegistryAddress, address(this))
-        );
 
         fireTransferEvents(address(0), owner());
     }
@@ -79,8 +73,7 @@ contract CreatureFactory is FactoryERC721, Ownable {
         ProxyRegistry proxyRegistry = ProxyRegistry(proxyRegistryAddress);
         assert(
             address(proxyRegistry.proxies(owner())) == _msgSender() ||
-                owner() == _msgSender() ||
-                _msgSender() == lootBoxNftAddress
+                owner() == _msgSender()
         );
         require(canMint(_optionId));
 
@@ -95,11 +88,6 @@ contract CreatureFactory is FactoryERC721, Ownable {
             ) {
                 openSeaCreature.mintTo(_toAddress);
             }
-        } else if (_optionId == LOOTBOX_OPTION) {
-            CreatureLootBox openSeaCreatureLootBox = CreatureLootBox(
-                lootBoxNftAddress
-            );
-            openSeaCreatureLootBox.mintTo(_toAddress);
         }
     }
 
@@ -116,11 +104,6 @@ contract CreatureFactory is FactoryERC721, Ownable {
             numItemsAllocated = 1;
         } else if (_optionId == MULTIPLE_CREATURE_OPTION) {
             numItemsAllocated = NUM_CREATURES_IN_MULTIPLE_CREATURE_OPTION;
-        } else if (_optionId == LOOTBOX_OPTION) {
-            CreatureLootBox openSeaCreatureLootBox = CreatureLootBox(
-                lootBoxNftAddress
-            );
-            numItemsAllocated = openSeaCreatureLootBox.itemsPerLootbox();
         }
         return creatureSupply < (CREATURE_SUPPLY - numItemsAllocated);
     }
